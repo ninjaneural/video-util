@@ -55,20 +55,27 @@ class Script(modules.scripts.Script):
             label='frame',
             placeholder='60'
         )
+        input_format = gr.Textbox(
+            label='images filename',
+            value='%07d.png'
+        )
+        
         output_dir = gr.Textbox(label='output_directory')
 
         return [
             input_dir,
             output_dir,
             input_skip_frame,
-            input_extract_mode
+            input_extract_mode,
+            input_format
         ]
 
     def run(self, p,
             input_dir,
             output_dir,
             input_skip_frame,
-            input_extract_mode):
+            input_extract_mode,
+            input_format):
 
         if not input_dir:
             raise ValueError('input_dir is empty')
@@ -90,7 +97,8 @@ class Script(modules.scripts.Script):
             make_video(
                 input_dir=input_dir,
                 output_filename=output_dir/output_video_name,
-                frame_rate=input_skip_frame
+                frame_rate=input_skip_frame,
+                input_format=input_format
             )
         
         else:
