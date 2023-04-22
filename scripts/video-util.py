@@ -1,15 +1,26 @@
 import gradio as gr
 import modules
+from modules.processing import process_images
 
 import os
 from pathlib import Path
 
+
+class Processed:
+    def __init__(self):
+        self.images = []
+        self.info = ""
+        self.comments = ""
+
+    def js(self):
+        return ""
+    
 def make_video(
         input_dir, output_filename,
         frame_rate=12, input_format='%07d.png'):
     
     os.system(
-        f"ffmpeg -r {frame_rate} "
+        f"ffmpeg -y -r {frame_rate} "
         f' -i "{Path(input_dir) / input_format}" '
         f" -c:v libx264 "
         f" -qp 0 "
@@ -27,14 +38,18 @@ class Script(modules.scripts.Script):
         return True
 
     def ui(self, is_img2img):
+        gr.Markdown(
+            "> extract : video -> images  \n"
+            "> combine : images -> video  \n"
+        )
         input_extract_mode = gr.Dropdown(
             label='mode',
             choices=['extract', 'combine'],
             value='extract'
         )        
         input_dir = gr.Textbox(
-            label='input_directory',
-            placeholder='A directory or a file'
+            label='input (directory or a file)',
+            placeholder='directory or a file'
         )
         input_skip_frame = gr.Textbox(
             label='frame',
@@ -90,8 +105,7 @@ class Script(modules.scripts.Script):
                 os.system(f'ffmpeg -i "{input_dir}" -vf fps={input_skip_frame} "{output_dir / "%07d.png"}" ')
             else: 
                 os.system(f'ffmpeg -i "{input_dir}" "{output_dir / "%07d.png"}" ')
-    
 
         print(f"finish~\n")
 
-        return None
+        return Processed()
