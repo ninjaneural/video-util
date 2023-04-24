@@ -23,6 +23,7 @@ def make_video(
         f"ffmpeg -y -r {frame_rate} "
         f' -i "{Path(input_dir) / input_format}" '
         f" -c:v libx264 "
+        f" -pix_fmt yuv420p "
         f" -qp 0 "
         f' "{output_filename}" '
     )
