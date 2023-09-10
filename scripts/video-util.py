@@ -45,7 +45,7 @@ class Script(modules.scripts.Script):
         )
         input_extract_mode = gr.Dropdown(
             label='mode',
-            choices=['extract', 'combine'],
+            choices=['extract', 'combine', 'shell'],
             value='extract'
         )        
         input_dir = gr.Textbox(
@@ -60,6 +60,10 @@ class Script(modules.scripts.Script):
             label='images filename',
             value='%07d.png'
         )
+        shell_command = gr.Textbox(
+            label='shell command',
+            value=''
+        )
         
         output_dir = gr.Textbox(label='output_directory')
 
@@ -68,7 +72,8 @@ class Script(modules.scripts.Script):
             output_dir,
             input_skip_frame,
             input_extract_mode,
-            input_format
+            input_format,
+            shell_command
         ]
 
     def run(self, p,
@@ -76,7 +81,8 @@ class Script(modules.scripts.Script):
             output_dir,
             input_skip_frame,
             input_extract_mode,
-            input_format):
+            input_format,
+            shell_command):
 
         if not input_dir:
             raise ValueError('input_dir is empty')
@@ -102,7 +108,7 @@ class Script(modules.scripts.Script):
                 input_format=input_format
             )
         
-        else:
+        elif input_extract_mode == 'extract':
             if input_dir.is_dir():
                 print("[extract] input file")
                 return None
@@ -114,6 +120,9 @@ class Script(modules.scripts.Script):
                 os.system(f'ffmpeg -i "{input_dir}" -vf fps={input_skip_frame} "{output_dir / "%07d.png"}" ')
             else: 
                 os.system(f'ffmpeg -i "{input_dir}" "{output_dir / "%07d.png"}" ')
+        
+        else:
+            os.system(f"{shell_command}")
 
         print(f"finish~\n")
 
